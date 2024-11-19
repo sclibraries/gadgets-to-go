@@ -10,18 +10,19 @@ import {
   CardBody,
   CardTitle,
   CardText,
-  Table
+  Table,
 } from 'reactstrap';
 
 const ItemModal = ({ isOpen, toggle, item }) => {
   const [itemData, setItemData] = useState(null);
+  const baseUrl = 'https://libtools2.smith.edu/gadgets-to-go/backend/web/api';
 
   useEffect(() => {
     if (item && item.folio_id) {
-      fetch(`https://libtools.smith.edu/development/gadgets_to_go/backend/web/inventory/get-folio?id=${item.folio_id}`)
-        .then(response => response.json())
-        .then(data => setItemData(data.data))
-        .catch(error => console.error('Error fetching item data:', error));
+      fetch(`${baseUrl}/inventory/get-folio?id=${item.folio_id}`)
+        .then((response) => response.json())
+        .then((data) => setItemData(data))
+        .catch((error) => console.error('Error fetching item data:', error));
     }
   }, [item]);
 
@@ -29,7 +30,26 @@ const ItemModal = ({ isOpen, toggle, item }) => {
     return null;
   }
 
-  const { holding } = itemData;
+  let { holding } = itemData;
+
+  // Normalize holding to an array if it's not already one
+  if (!Array.isArray(holding)) {
+    holding = holding ? [holding] : [];
+  }
+
+  // Sort holdings so that 'Available' statuses come first
+  holding.sort((a, b) => {
+    const statusA = a.status.toLowerCase();
+    const statusB = b.status.toLowerCase();
+
+    if (statusA === 'available' && statusB !== 'available') {
+      return -1;
+    } else if (statusA !== 'available' && statusB === 'available') {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
@@ -38,7 +58,7 @@ const ItemModal = ({ isOpen, toggle, item }) => {
         <Card>
           <div className="d-flex">
             <img
-              src={`https://libtools.smith.edu/development/gadgets_to_go/backend/web/inventory/get-image-data?id=${item.id}`}
+              src={`${baseUrl}/inventory/get-image-data?id=${item.id}`}
               alt={item.title}
               className="img-thumbnail"
               style={{ width: '150px', height: '150px', objectFit: 'cover' }}
@@ -46,37 +66,58 @@ const ItemModal = ({ isOpen, toggle, item }) => {
             <CardBody>
               <CardTitle tag="h5">{item.title}</CardTitle>
               <CardText>{item.description}</CardText>
-              <CardText><strong>Location:</strong> {holding[0].location}</CardText>
-              <CardText><strong>System ID:</strong> {item.folio_id}</CardText>
-              <CardText><strong>Loan Type:</strong> {holding[0].permanentLoanType}</CardText>
+              {holding.length > 0 && (
+                <>
+                  <CardText>
+                    <strong>Location:</strong> {holding[0].location}
+                  </CardText>
+                  <CardText>
+                    <strong>System ID:</strong> {item.folio_id}
+                  </CardText>
+                  <CardText>
+                    <strong>Loan Type:</strong> {holding[0].permanentLoanType}
+                  </CardText>
+                </>
+              )}
             </CardBody>
           </div>
         </Card>
-        <Table className="mt-3">
-          <thead>
-            <tr>
-              <th>Record ID</th>
-              <th>Location</th>
-              <th>Loan Type</th>
-              <th>Status</th>
-              <th>Due Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {holding.map(record => (
-              <tr key={record.id}>
-                <td>{record.callNumber}</td>
-                <td>{record.location}</td>
-                <td>{record.permanentLoanType}</td>
-                <td>{record.status}</td>
-                <td>{record.dueDate ? new Date(record.dueDate).toLocaleString() : 'N/A'}</td>
+        {holding.length > 0 ? (
+          <Table className="mt-3">
+            <thead>
+              <tr>
+                <th>Record ID</th>
+                <th>Location</th>
+                <th>Loan Type</th>
+                <th>Status</th>
+                <th>Due Date</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {holding.map((record) => (
+                <tr
+                key={record.id}
+                className={record.status.toLowerCase() !== 'available' ? 'table-danger' : ''}
+              >
+                  <td>{record.callNumber}</td>
+                  <td>{record.location}</td>
+                  <td>{record.permanentLoanType}</td>
+                  <td>{record.status}</td>
+                  <td>
+                    {record.dueDate ? new Date(record.dueDate).toLocaleString() : ''}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <p>No holding data available.</p>
+        )}
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggle}>Close</Button>
+        <Button color="secondary" onClick={toggle}>
+          Close
+        </Button>
       </ModalFooter>
     </Modal>
   );
@@ -91,8 +132,8 @@ ItemModal.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
     location: PropTypes.string,
-    permanentLoanType: PropTypes.string
-  })
+    permanentLoanType: PropTypes.string,
+  }),
 };
 
 export default ItemModal;

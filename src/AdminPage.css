@@ -1,0 +1,31 @@
+/* AdminPage.css */
+
+.content {
+    padding-top: 80px; /* Adjust this value based on the navbar height */
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 56px; /* Adjust this value based on the navbar height */
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    overflow-y: auto;
+  }
+  
+  .content {
+    margin-left: 240px;
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      position: relative;
+      top: 0;
+    }
+    .content {
+      margin-left: 0;
+      padding-top: 80px; /* Adjust this value based on the navbar height */
+    }
+  }
+  

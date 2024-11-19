@@ -1,5 +1,5 @@
-import create from 'zustand';
-
+import { create } from 'zustand';
+const baseUrl = 'https://libtools2.smith.edu/gadgets-to-go/backend/web/api';
 const useMtHolyokeStore = create((set) => ({
   layoutData: [],
   colorData: [],
@@ -7,13 +7,13 @@ const useMtHolyokeStore = create((set) => ({
   fetchLayoutData: async () => {
     try {
       const location = 'MHC';
-      const layoutResponse = await fetch(`https://libtools.smith.edu/development/gadgets_to_go/backend/web/label/get-data?location=${location}`);
+      const layoutResponse = await fetch(`${baseUrl}/label/get-data?location=${location}`);
       const layoutJson = await layoutResponse.json();
-      const colorResponse = await fetch(`https://libtools.smith.edu/development/gadgets_to_go/backend/web/styling/get-data?location=${location}`);
+      const colorResponse = await fetch(`${baseUrl}/styling/get-data?location=${location}`);
       const colorJson = await colorResponse.json();
       set({
-        layoutData: layoutJson.data || [],
-        colorData: colorJson.data || [],
+        layoutData: layoutJson|| [],
+        colorData: colorJson || [],
       });
     } catch (error) {
       console.error('Error fetching Mt Holyoke layout data:', error);
@@ -22,10 +22,11 @@ const useMtHolyokeStore = create((set) => ({
   fetchInventoryData: async () => {
     try {
       const owner = 'MHC';
-      const response = await fetch(`https://libtools.smith.edu/development/gadgets_to_go/backend/web/inventory/location-data?owner=${owner}`);
+      console.log('owner', owner);
+      const response = await fetch(`${baseUrl}/inventory/location-data?owner=${owner}`);
       const json = await response.json();
       set({
-        inventoryData: json.data || [],
+        inventoryData: json || [],
       });
     } catch (error) {
       console.error('Error fetching Mt Holyoke inventory data:', error);

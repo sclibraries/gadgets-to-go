@@ -38,3 +38,28 @@
   height: 300px;
   object-fit: cover;
 }
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container-wrapper {
+  flex: 1;
+}
+
+.search-box {
+  margin: 20px 0;
+}
+
+.footer {
+  width: 100%;
+  background-color: #f8f9fa; /* Adjust as necessary */
+  padding: 1rem;
+  text-align: center;
+}
+
+.footer .a {
+  text-align: left;
+}
