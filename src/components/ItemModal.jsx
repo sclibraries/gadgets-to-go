@@ -86,8 +86,11 @@ const ItemModal = ({ isOpen, toggle, item }) => {
           <Table className="mt-3">
             <thead>
               <tr>
+                <th>Barcode</th>
                 <th>Record ID</th>
-                <th>Location</th>
+                <th>Call Number</th>
+                <th>Copy</th>
+                <th>Volume</th>
                 <th>Loan Type</th>
                 <th>Status</th>
                 <th>Due Date</th>
@@ -99,8 +102,11 @@ const ItemModal = ({ isOpen, toggle, item }) => {
                 key={record.id}
                 className={record.status.toLowerCase() !== 'available' ? 'table-danger' : ''}
               >
-                  <td>{record.callNumber}</td>
-                  <td>{record.location}</td>
+                  <td>{record.barcode}</td>
+                  <td>{record.id}</td>
+                  <td>{record.callNumber ? record.callNumber : ''}</td>
+                  <td>{record && record.itemCopyNumber ? record.itemCopyNumber: ''}</td>
+                  <td>{record && record.volume ? record.volume : ''}</td>
                   <td>{record.permanentLoanType}</td>
                   <td>{record.status}</td>
                   <td>
