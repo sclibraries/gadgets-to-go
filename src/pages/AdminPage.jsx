@@ -175,6 +175,7 @@ function AdminPage() {
                 token={token}
                 refreshInventory={refreshInventory}
                 setLocalInventoryData={setLocalInventoryData}
+                mapLocations={mapLocations}
               />
             )}
 

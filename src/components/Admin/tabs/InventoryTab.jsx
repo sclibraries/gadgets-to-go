@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-function InventoryTab({ inventoryData, styles, baseUrl, token, refreshInventory, setLocalInventoryData }) {
+function InventoryTab({ inventoryData, styles, baseUrl, token, refreshInventory, setLocalInventoryData, mapLocations }) {
   const [editableItem, setEditableItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [imageFile, setImageFile] = useState(null);
@@ -125,7 +125,8 @@ function InventoryTab({ inventoryData, styles, baseUrl, token, refreshInventory,
       refreshInventory();
     } catch (error) {
       console.error('Failed to update item', error);
-      toast.error('Failed to update item.');
+      const errorMessage = error.response?.data?.message || 'Failed to update item.';
+      toast.error(errorMessage);
     }
   };
   
@@ -312,7 +313,7 @@ function InventoryTab({ inventoryData, styles, baseUrl, token, refreshInventory,
         formData.append('title', item.title);
         formData.append('folio_id', item.id);
         formData.append('description', description || '');
-        formData.append('owner', 'SMC'); // Adjust as needed
+        formData.append('owner', mapLocations); 
         formData.append('sort_order', 0); // Adjust as needed
   
         if (image) {
@@ -423,7 +424,7 @@ function InventoryTab({ inventoryData, styles, baseUrl, token, refreshInventory,
                       </Input>
                     </FormGroup>
                     <FormGroup>
-                      <Label for="image">Change Image</Label>
+                      <Label for="image">Change Image (2mb size limit)</Label>
                       <Input
                         type="file"
                         onChange={(e) => handleImageChange(e, item)}
